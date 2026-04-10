@@ -1,0 +1,284 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SAHÉ | Belleza Exclusiva</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* --- VARIABLES DE DISEÑO APPLE --- */
+        :root {
+            --bg-color: #ffffff;
+            --apple-gray: #f5f5f7;
+            --apple-gray-hover: #e8e8ed;
+            --text-main: #1d1d1f;
+            --text-sec: #86868b;
+            --accent: #1d1d1f; 
+            --border-color: #d2d2d7;
+            --ease-apple: cubic-bezier(0.25, 0.1, 0.25, 1);
+            --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            -webkit-font-smoothing: antialiased; 
+            overflow-x: hidden; 
+            line-height: 1.47;
+            letter-spacing: -0.022em;
+        }
+
+        /* --- NAVEGACIÓN GLASSMORPHISM --- */
+        nav {
+            position: fixed; top: 0; left: 0; width: 100%; height: 54px;
+            background: rgba(255, 255, 255, 0.55); 
+            backdrop-filter: saturate(180%) blur(24px);
+            -webkit-backdrop-filter: saturate(180%) blur(24px);
+            z-index: 1000; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 5%; border-bottom: 0.5px solid rgba(0,0,0,0.08);
+        }
+        
+        .logo { position: absolute; left: 50%; transform: translateX(-50%); font-weight: 600; font-size: 20px; letter-spacing: 0.05em; cursor: pointer; text-transform: uppercase; }
+        
+        .search-box { display: flex; align-items: center; border-radius: 30px; transition: 0.4s var(--ease-apple); padding: 4px; }
+        .search-box.active { background: rgba(0,0,0,0.06); padding: 4px 12px; }
+        .search-box input { width: 0; border: none; background: transparent; outline: none; font-size: 14px; transition: width 0.4s; opacity: 0; }
+        .search-box.active input { width: 140px; opacity: 1; margin-left: 8px; }
+        
+        .cart-icon-wrapper { position: relative; cursor: pointer; display: flex; align-items: center; padding: 6px; }
+        .cart-badge { position: absolute; top: -2px; right: -4px; background: var(--text-main); color: white; font-size: 10px; font-weight: 600; height: 16px; min-width: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid white; box-sizing: content-box; }
+
+        /* --- PANELES --- */
+        .sidebar, .cart-sidebar { position: fixed; top: 0; height: 100vh; background: rgba(255, 255, 255, 0.85); backdrop-filter: saturate(180%) blur(40px); z-index: 2000; transition: 0.5s var(--ease-apple); }
+        .sidebar { left: -100%; width: 360px; padding: 80px 40px; }
+        .sidebar.active { left: 0; }
+        .cart-sidebar { right: -100%; width: 420px; display: flex; flex-direction: column; }
+        .cart-sidebar.active { right: 0; }
+        
+        .cart-item { display: flex; gap: 15px; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgba(0,0,0,0.03); }
+        .cart-item-img { width: 70px; height: 70px; border-radius: 12px; background-size: cover; background-position: center; }
+
+        /* --- VISTAS --- */
+        main { padding-top: 54px; min-height: 100vh; }
+        .view { display: none; animation: slideUp 0.6s var(--ease-apple) forwards; }
+        .view.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- HERO --- */
+        .hero { position: relative; height: 80vh; display: flex; align-items: center; justify-content: center; text-align: center; color: white; overflow: hidden; }
+        .hero-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: -1; }
+        .hero-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; opacity: 0; animation: fadeEffect 12s infinite; }
+        .hero-slide:nth-child(1) { background-image: url('https://images.unsplash.com/photo-1594035910387-fea47794261f?w=1920'); }
+        .hero-slide:nth-child(2) { background-image: url('https://images.unsplash.com/photo-1523293115678-d29062e02208?w=1920'); animation-delay: 4s; }
+        .hero-slide:nth-child(3) { background-image: url('https://images.unsplash.com/photo-1595425970377-c9703c74068e?w=1920'); animation-delay: 8s; }
+        @keyframes fadeEffect { 0% { opacity: 0; } 10% { opacity: 1; } 30% { opacity: 1; } 40% { opacity: 0; } 100% { opacity: 0; } }
+        .hero-content h1 { font-size: clamp(40px, 8vw, 80px); font-weight: 600; letter-spacing: -0.04em; }
+
+        /* --- PRODUCTOS --- */
+        .container { max-width: 1200px; margin: 0 auto; padding: 80px 5%; }
+        .horizontal-scroll { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 40px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+        .horizontal-scroll::-webkit-scrollbar { display: none; }
+        .product-card { flex: 0 0 280px; scroll-snap-align: center; background: var(--apple-gray); border-radius: 24px; padding: 30px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .product-card:hover { transform: scale(1.02); background: #f0f0f5; }
+        .product-img { width: 100%; height: 240px; background-size: cover; background-position: center; border-radius: 14px; margin-bottom: 20px; }
+
+        /* --- DETALLE --- */
+        .product-detail-container { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; max-width: 1100px; margin: 60px auto; padding: 0 5%; align-items: center; }
+        .main-detail-img { width: 100%; height: 500px; object-fit: cover; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
+        
+        .tone-options { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+        .tone-btn { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border: 1px solid var(--border-color); border-radius: 30px; background: transparent; cursor: pointer; font-size: 14px; font-weight: 500; }
+        .tone-btn.active { background: var(--text-main); color: white; border-color: var(--text-main); }
+        .tone-color { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.3); }
+
+        /* --- BOTONES --- */
+        .btn-checkout, .btn-buy, .btn-pay { width: 100%; background: var(--text-main); color: white; border: none; padding: 18px; border-radius: 30px; font-size: 17px; font-weight: 500; cursor: pointer; transition: 0.3s; }
+        .btn-checkout:hover { transform: scale(1.02); }
+
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 1500; opacity: 0; visibility: hidden; transition: 0.4s; }
+        .overlay.active { opacity: 1; visibility: visible; }
+
+        /* --- PAGO --- */
+        .checkout-container { max-width: 600px; margin: 60px auto; padding: 0 5%; }
+        .form-control { width: 100%; padding: 18px; border: 1px solid var(--border-color); border-radius: 16px; font-size: 16px; margin-bottom: 20px; }
+        .payment-option { display: flex; align-items: center; padding: 20px; border: 1px solid var(--border-color); border-radius: 16px; cursor: pointer; margin-bottom: 15px; }
+        .payment-option.selected { border-color: #0071e3; background: rgba(0, 113, 227, 0.03); }
+        .qr-box { background: white; border-radius: 20px; padding: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px; margin: 20px 0; border: 1px solid #eee; }
+
+        /* --- MODAL ÉXITO --- */
+        .success-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); padding: 50px; border-radius: 32px; text-align: center; z-index: 3000; opacity: 0; visibility: hidden; transition: 0.4s var(--ease-spring); width: 90%; max-width: 400px; }
+        .success-modal.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+
+        @media (max-width: 850px) { .product-detail-container { grid-template-columns: 1fr; } .main-detail-img { height: 350px; } }
+    </style>
+</head>
+<body>
+
+    <div class="overlay" id="overlay" onclick="closeAllPanels()"></div>
+
+    <div class="success-modal" id="successModal">
+        <i class="fa fa-check-circle" style="font-size: 60px; color: #34c759; margin-bottom: 20px;"></i>
+        <h2>¡Pedido Confirmado!</h2>
+        <p style="color: var(--text-sec); margin-bottom: 30px;">Se ha abierto WhatsApp para confirmar tu pedido. Recuerda presentar tu comprobante.</p>
+        <button class="btn-checkout" onclick="closeSuccessModal()">Volver a SAHÉ</button>
+    </div>
+
+    <nav>
+        <div class="nav-left"><div class="hamburger" onclick="openMenu()"><i class="fa fa-bars"></i></div></div>
+        <div class="logo" onclick="navigate('home')">SAHÉ</div>
+        <div class="nav-right">
+            <div class="search-box" id="searchBox">
+                <i class="fa fa-search" onclick="toggleSearch()"></i>
+                <input type="text" id="searchInput" placeholder="Buscar..." oninput="doSearch()">
+            </div>
+            <div class="cart-icon-wrapper" onclick="openCart()">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 8V5a4 4 0 0 1 8 0v3"></path><rect x="4" y="8" width="16" height="14" rx="2"></rect></svg>
+                <span class="cart-badge" id="cartBadge">0</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-close" onclick="closeAllPanels()"><i class="fa fa-times"></i></div>
+        <ul>
+            <li onclick="navigate('home'); closeAllPanels()">Inicio</li>
+            <li onclick="loadCategory('perfume', 'hombre')">Perfumes Hombre</li>
+            <li onclick="loadCategory('perfume', 'mujer')">Perfumes Mujer</li>
+            <li onclick="loadCategory('balsamo', 'unisex')">Labiales</li>
+        </ul>
+    </div>
+
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header"><h2>Tu Bolsa</h2></div>
+        <div class="cart-items" id="cartList"></div>
+        <div class="cart-footer">
+            <div style="display:flex; justify-content:space-between; font-size:20px; font-weight:600; margin-bottom:20px;">
+                <span>Total</span><span id="cartTotal">$0.00</span>
+            </div>
+            <button class="btn-checkout" onclick="goCheckout()">Pagar ahora</button>
+        </div>
+    </div>
+
+    <main>
+        <section id="view-home" class="view active">
+            <div class="hero">
+                <div class="hero-bg"><div class="hero-slide"></div><div class="hero-slide"></div><div class="hero-slide"></div></div>
+                <div class="hero-content"><h1>El arte de la presencia.</h1><p>Fragancias que revelan tu esencia.</p></div>
+            </div>
+            <div class="container" style="max-width: 100%;">
+                <h2 class="section-title">Nuestros productos</h2>
+                <div class="horizontal-scroll" id="homeGrid"></div>
+            </div>
+        </section>
+
+        <section id="view-catalog" class="view">
+            <div class="container"><h2 class="section-title" id="catTitle">Catálogo</h2><div id="catGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap:30px;"></div></div>
+        </section>
+
+        <section id="view-product" class="view">
+            <div class="container">
+                <div style="cursor:pointer; color:var(--text-sec); margin-bottom:20px;" onclick="navigate('home')"><i class="fa fa-chevron-left"></i> Volver</div>
+                <div id="prodDetail" class="product-detail-container"></div>
+                <h2 class="section-title" style="margin-top:80px; font-size:24px;">También te podría gustar</h2>
+                <div class="horizontal-scroll" id="relatedGrid"></div>
+            </div>
+        </section>
+
+        <section id="view-checkout" class="view">
+            <div class="checkout-container">
+                <h1 style="text-align:center; margin-bottom:40px;">Finalizar Pedido</h1>
+                <form onsubmit="event.preventDefault(); finishOrder();">
+                    <input type="text" id="orderName" class="form-control" placeholder="Nombre completo" required>
+                    <input type="email" id="orderEmail" class="form-control" placeholder="Correo" required>
+                    
+                    <h3>Método de Pago</h3>
+                    <div class="payment-option selected" id="payQR" onclick="setPay('transfer')">
+                        <label style="flex-grow:1; font-weight:500;">Transferencia vía QR</label><i class="fa fa-qrcode"></i>
+                    </div>
+                    <div id="qrArea" style="text-align:center;">
+                        <div class="qr-box">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=PagoSahe" alt="QR">
+                            <span style="font-weight:600;">Escanear para pagar</span>
+                        </div>
+                    </div>
+
+                    <div class="payment-option" id="payCash" onclick="setPay('cash')">
+                        <label style="flex-grow:1; font-weight:500;">Efectivo en Local</label><i class="fa fa-money-bill-wave"></i>
+                    </div>
+
+                    <div style="background:var(--apple-gray); padding:30px; border-radius:20px; margin:40px 0; display:flex; justify-content:space-between; font-size:22px; font-weight:600;">
+                        <span>Total</span><span id="checkTotal">$0.00</span>
+                    </div>
+                    <button type="submit" class="btn-pay">Confirmar Pedido</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // CONFIGURACIÓN: CAMBIA ESTE NÚMERO (INCLUYE CÓDIGO DE PAÍS)
+        const MY_WHATSAPP = "593XXXXXXXXX"; 
+
+        const products = [
+            { id: 1, name: "Pacco Femme", cat: "perfume", gen: "mujer", price: 5, tag: "Parfum", img: "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=600", desc: "Fragancia intensa y sofisticada con notas florales y cálidas que reflejan poder y elegancia.", info: "Longevidad: 4-6h. Inspiración: Noche urbana." },
+            { id: 2, name: "Diore Prestige", cat: "perfume", gen: "hombre", price: 5, tag: "Premium", img: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?w=600", desc: "Línea premium inspirada en la rosa de Granville, combinando lujo y naturaleza.", info: "Longevidad: 6-8h. Inspiración: Jardín francés." },
+            { id: 3, name: "Paris Glow", cat: "perfume", gen: "mujer", price: 5, tag: "Fresh", img: "https://images.unsplash.com/photo-1523293115678-d29062e02208?w=600", desc: "Energía con notas florales y frutales que aportan frescura y estilo moderno.", info: "Longevidad: 3-5h. Inspiración: Amanecer parisino." },
+            { id: 4, name: "Adriana Dream", cat: "perfume", gen: "mujer", price: 5, tag: "Floral", img: "https://images.unsplash.com/photo-1595425970377-c9703c74068e?w=600", desc: "Floral con vainilla que transmite elegancia y frescura artesanal.", info: "Longevidad: 4-6h. Inspiración: Sueño bajo el sol." },
+            { id: 5, name: "Labiales Hidratantes", cat: "balsamo", gen: "unisex", price: 2, tag: "Color", img: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=600", tones: [{n:"Red Supreme", c:"#c1121f", i:"https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=600"}, {n:"Wild Cherry", c:"#780000", i:"https://images.unsplash.com/photo-1599305090598-fe179d501227?w=600"}, {n:"Coffee Date", c:"#8b5a2b", i:"https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600"}], desc: "Un toque de color natural que hidrata, suaviza y cuida tus labios.", info: "Fórmula 100% natural y artesanal." }
+        ];
+
+        let cart = [];
+        let currentTone = null;
+        let payMethod = 'transfer';
+
+        function openMenu() { document.getElementById('sidebar').classList.add('active'); document.getElementById('overlay').classList.add('active'); }
+        function openCart() { document.getElementById('cartSidebar').classList.add('active'); document.getElementById('overlay').classList.add('active'); renderCart(); }
+        function closeAllPanels() { document.getElementById('sidebar').classList.remove('active'); document.getElementById('cartSidebar').classList.remove('active'); document.getElementById('overlay').classList.remove('active'); }
+        function navigate(id) { document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); document.getElementById('view-'+id).classList.add('active'); window.scrollTo(0,0); }
+        function toggleSearch() { document.getElementById('searchBox').classList.toggle('active'); }
+
+        function createItemHTML(p) {
+            const image = p.tones ? p.tones[0].i : p.img;
+            return `<div class="product-card" onclick="viewProd(${p.id})"><span class="tag">${p.tag}</span><div class="product-img" style="background-image:url('${image}')"></div><h3 style="font-size:20px;">${p.name}</h3><p style="color:var(--text-sec);">$${p.price.toFixed(2)}</p></div>`;
+        }
+
+        function loadCategory(c, g) {
+            const filtered = products.filter(x => x.cat === c && (g === 'unisex' || x.gen === g));
+            document.getElementById('catTitle').innerText = c === 'perfume' ? 'Fragancias' : 'Labiales';
+            document.getElementById('catGrid').innerHTML = filtered.map(createItemHTML).join('');
+            closeAllPanels(); navigate('catalog');
+        }
+
+        function viewProd(id) {
+            const p = products.find(x => x.id === id);
+            currentTone = p.tones ? p.tones[0] : null;
+            let tonesUI = p.tones ? `<div class="tone-selector"><div class="tone-options">${p.tones.map((t,i)=>`<button class="tone-btn ${i===0?'active':''}" onclick="selTone(${p.id},${i},this)"><span class="tone-color" style="background:${t.c}"></span>${t.n}</button>`).join('')}</div></div>` : '';
+            
+            document.getElementById('prodDetail').innerHTML = `
+                <img src="${currentTone?currentTone.i:p.img}" id="detImg" class="main-detail-img">
+                <div><span class="tag">${p.tag}</span><h1>${p.name}</h1><p style="font-size:28px; margin:15px 0;">$${p.price.toFixed(2)}</p><p style="color:var(--text-sec); margin-bottom:20px;">${p.desc}</p>
+                <div style="font-size:14px; margin-bottom:20px;">${p.info}</div>${tonesUI}
+                <button class="btn-buy" onclick="addCart(${p.id})">Añadir a la bolsa</button></div>`;
+            document.getElementById('relatedGrid').innerHTML = products.filter(x => x.id !== id).map(createItemHTML).join('');
+            navigate('product');
+        }
+
+        function selTone(pid, idx, btn) {
+            const p = products.find(x => x.id === pid);
+            currentTone = p.tones[idx];
+            document.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('detImg').src = currentTone.i;
+        }
+
+        function addCart(id) {
+            const p = products.find(x => x.id === id);
+            let item = {...p};
+            if(currentTone) { item.name += ` (${currentTone.n})`; item.img = currentTone.i; }
+            cart.push(item); updateBadge(); openCart();
+ 
